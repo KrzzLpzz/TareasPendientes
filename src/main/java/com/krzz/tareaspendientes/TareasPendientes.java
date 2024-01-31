@@ -29,7 +29,7 @@ public class TareasPendientes extends javax.swing.JFrame {
      */
     public TareasPendientes() {
         initComponents();
-        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
+        loadFile(archivo, jTablePendientes, jTableCompletadas);
     }
 
     /**
@@ -86,11 +86,6 @@ public class TareasPendientes extends javax.swing.JFrame {
         });
 
         jBtnNuevo.setText("Nuevo");
-        jBtnNuevo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnNuevoActionPerformed(evt);
-            }
-        });
 
         JBtnEliminar.setText("Eliminar");
         JBtnEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -100,11 +95,6 @@ public class TareasPendientes extends javax.swing.JFrame {
         });
 
         jBtnSalir.setText("Salir");
-        jBtnSalir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnSalirActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -260,28 +250,20 @@ public class TareasPendientes extends javax.swing.JFrame {
 
     private void jBtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIngresarActionPerformed
         writeData(archivo);
-        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
+        loadFile(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
-        actualizarDato(archivo, jTxtTarea.getText());
-        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
+        updateData(archivo, jTxtTarea.getText());
+        loadFile(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_jBtnActualizarActionPerformed
 
-    private void jBtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNuevoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jBtnNuevoActionPerformed
-
     private void JBtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBtnEliminarActionPerformed
-        eliminarLineaPorValorPrimeraColumna(archivo);
-        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
+        deleteData(archivo);
+        loadFile(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_JBtnEliminarActionPerformed
 
-    private void jBtnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnSalirActionPerformed
-
-    }//GEN-LAST:event_jBtnSalirActionPerformed
-
-    public static void cargarArchivoEnJTable(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
+    public static void loadFile(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
         DefaultTableModel modelPendientes = (DefaultTableModel) jTablePendientes.getModel();
         DefaultTableModel modelCompletadas = (DefaultTableModel) jTableCompletadas.getModel();
 
@@ -316,7 +298,7 @@ public class TareasPendientes extends javax.swing.JFrame {
         }
     }
 
-    public void actualizarDato(File archivo, String valorPrimeraColumna) {
+    public void updateData(File archivo, String valorPrimeraColumna) {
     List<String> lineas = new ArrayList<>();
 
     // Leer el archivo y cargar los datos en la lista
@@ -355,8 +337,7 @@ public class TareasPendientes extends javax.swing.JFrame {
     }
 }
 
-
-    public void eliminarLineaPorValorPrimeraColumna(File archivo) {
+    public void deleteData(File archivo) {
         String valorPrimeraColumna = jTxtTarea.getText(); // Obtener el valor del JTextField
         List<String> lineas = new ArrayList<>();
 
@@ -415,10 +396,8 @@ public class TareasPendientes extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TareasPendientes().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new TareasPendientes().setVisible(true);
         });
     }
 
