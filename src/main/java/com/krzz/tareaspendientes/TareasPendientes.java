@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 
@@ -22,19 +23,15 @@ import javax.swing.JTable;
  *
  * @author crisa
  */
-public class TareasPendientes extends javax.swing.JFrame {
-
+public final class TareasPendientes extends javax.swing.JFrame {
     private final String ruta = System.getProperties().getProperty("user.dir");
     File archivo = new File(ruta + "//TAREAS.txt");
-    
-    
-        
 
     /**
      * Creates new form TareasPendientes
      */
     public TareasPendientes() {
-        initComponents();
+        initComponents();        
         loadFile(archivo, jTablePendientes, jTableCompletadas);
         transferDataCompleted();
         transferDataPending();
@@ -109,6 +106,11 @@ public class TareasPendientes extends javax.swing.JFrame {
         });
 
         jBtnSalir.setText("Salir");
+        jBtnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnSalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -268,18 +270,28 @@ public class TareasPendientes extends javax.swing.JFrame {
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
-        updateData(archivo, jTxtTarea.getText());
-        loadFile(archivo, jTablePendientes, jTableCompletadas);
+        if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres editar este item?", "Editar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+            updateData(archivo, jTxtTarea.getText());
+            loadFile(archivo, jTablePendientes, jTableCompletadas);
+        }
     }//GEN-LAST:event_jBtnActualizarActionPerformed
 
     private void JBtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBtnEliminarActionPerformed
-        deleteData(archivo);
-        loadFile(archivo, jTablePendientes, jTableCompletadas);
+        if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar este item?", "Eliminar", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+            deleteData(archivo);
+            loadFile(archivo, jTablePendientes, jTableCompletadas);
+        }
     }//GEN-LAST:event_JBtnEliminarActionPerformed
 
     private void jBtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNuevoActionPerformed
         clear();
     }//GEN-LAST:event_jBtnNuevoActionPerformed
+
+    private void jBtnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnSalirActionPerformed
+        if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres salir?", "Salir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_jBtnSalirActionPerformed
 
     public static void loadFile(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
         DefaultTableModel modelPendientes = (DefaultTableModel) jTablePendientes.getModel();
@@ -317,43 +329,43 @@ public class TareasPendientes extends javax.swing.JFrame {
     }
 
     public void updateData(File archivo, String valorPrimeraColumna) {
-    List<String> lineas = new ArrayList<>();
+        List<String> lineas = new ArrayList<>();
 
-    // Leer el archivo y cargar los datos en la lista
-    try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            lineas.add(linea);
+        // Leer el archivo y cargar los datos en la lista
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                lineas.add(linea);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        return;
-    }
 
-    // Obtener los nuevos datos desde tus componentes
-    String nuevaLinea = jTxtTarea.getText() + "," + jCboEstado.getSelectedItem().toString(); // Nueva línea completa
+        // Obtener los nuevos datos desde tus componentes
+        String nuevaLinea = jTxtTarea.getText() + "," + jCboEstado.getSelectedItem().toString(); // Nueva línea completa
 
-    // Buscar y actualizar el dato deseado
-    for (int i = 0; i < lineas.size(); i++) {
-        String[] partes = lineas.get(i).split(","); // Suponiendo que tus datos están separados por comas
-        if (partes.length > 0 && partes[0].equals(valorPrimeraColumna)) {
-            // Actualizar la línea completa
-            lineas.set(i, nuevaLinea);
-            break; // Termina la búsqueda una vez que se actualiza la línea
+        // Buscar y actualizar el dato deseado
+        for (int i = 0; i < lineas.size(); i++) {
+            String[] partes = lineas.get(i).split(","); // Suponiendo que tus datos están separados por comas
+            if (partes.length > 0 && partes[0].equals(valorPrimeraColumna)) {
+                // Actualizar la línea completa
+                lineas.set(i, nuevaLinea);
+                break; // Termina la búsqueda una vez que se actualiza la línea
+            }
+        }
+
+        // Escribir los datos actualizados de vuelta al archivo
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+            for (String linea : lineas) {
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
-    // Escribir los datos actualizados de vuelta al archivo
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
-        for (String linea : lineas) {
-            bw.write(linea);
-            bw.newLine();
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
 
     public void deleteData(File archivo) {
         String valorPrimeraColumna = jTxtTarea.getText(); // Obtener el valor del JTextField
@@ -393,9 +405,10 @@ public class TareasPendientes extends javax.swing.JFrame {
         jTxtBuscar.setText("");
         jTxtTarea.requestFocus();
     }
-    
+
     public void transferDataPending() {
         jTablePendientes.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent Mouse_evt) {
                 JTable table = (JTable) Mouse_evt.getSource();
                 Point point = Mouse_evt.getPoint();
@@ -403,13 +416,16 @@ public class TareasPendientes extends javax.swing.JFrame {
                 if (Mouse_evt.getClickCount() == 1) {
                     jTxtTarea.setText(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 0).toString());
                     jCboEstado.setSelectedItem(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 1).toString());
+                    jBtnIngresar.setEnabled(false);
+                    jBtnActualizar.setEnabled(true);
                 }
             }
         });
     }
-    
+
     public void transferDataCompleted() {
         jTableCompletadas.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent Mouse_evt) {
                 JTable table = (JTable) Mouse_evt.getSource();
                 Point point = Mouse_evt.getPoint();
@@ -417,17 +433,18 @@ public class TareasPendientes extends javax.swing.JFrame {
                 if (Mouse_evt.getClickCount() == 1) {
                     jTxtTarea.setText(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 0).toString());
                     jCboEstado.setSelectedItem(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 1).toString());
+                    jBtnIngresar.setEnabled(false);
+                    jBtnActualizar.setEnabled(true);
                 }
             }
         });
     }
-    
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -444,7 +461,7 @@ public class TareasPendientes extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(TareasPendientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
         //</editor-fold>
 
         /* Create and display the form */
