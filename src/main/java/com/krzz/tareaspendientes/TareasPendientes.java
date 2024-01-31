@@ -4,6 +4,9 @@
  */
 package com.krzz.tareaspendientes;
 
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,6 +26,9 @@ public class TareasPendientes extends javax.swing.JFrame {
 
     private final String ruta = System.getProperties().getProperty("user.dir");
     File archivo = new File(ruta + "//TAREAS.txt");
+    
+    
+        
 
     /**
      * Creates new form TareasPendientes
@@ -30,6 +36,8 @@ public class TareasPendientes extends javax.swing.JFrame {
     public TareasPendientes() {
         initComponents();
         loadFile(archivo, jTablePendientes, jTableCompletadas);
+        transferDataCompleted();
+        transferDataPending();
     }
 
     /**
@@ -57,7 +65,7 @@ public class TareasPendientes extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableCompletadas = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        jTxtBuscar = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -79,6 +87,7 @@ public class TareasPendientes extends javax.swing.JFrame {
         });
 
         jBtnActualizar.setText("Actualizar");
+        jBtnActualizar.setEnabled(false);
         jBtnActualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBtnActualizarActionPerformed(evt);
@@ -86,6 +95,11 @@ public class TareasPendientes extends javax.swing.JFrame {
         });
 
         jBtnNuevo.setText("Nuevo");
+        jBtnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnNuevoActionPerformed(evt);
+            }
+        });
 
         JBtnEliminar.setText("Eliminar");
         JBtnEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -226,7 +240,7 @@ public class TareasPendientes extends javax.swing.JFrame {
                 .addContainerGap(159, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(158, 158, 158))
         );
         layout.setVerticalGroup(
@@ -236,7 +250,7 @@ public class TareasPendientes extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,6 +276,10 @@ public class TareasPendientes extends javax.swing.JFrame {
         deleteData(archivo);
         loadFile(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_JBtnEliminarActionPerformed
+
+    private void jBtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNuevoActionPerformed
+        clear();
+    }//GEN-LAST:event_jBtnNuevoActionPerformed
 
     public static void loadFile(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
         DefaultTableModel modelPendientes = (DefaultTableModel) jTablePendientes.getModel();
@@ -367,6 +385,44 @@ public class TareasPendientes extends javax.swing.JFrame {
         }
     }
 
+    public void clear() {
+        jTxtTarea.setText("");
+        jCboEstado.setSelectedIndex(0);
+        jBtnActualizar.setEnabled(false);
+        jBtnIngresar.setEnabled(true);
+        jTxtBuscar.setText("");
+        jTxtTarea.requestFocus();
+    }
+    
+    public void transferDataPending() {
+        jTablePendientes.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent Mouse_evt) {
+                JTable table = (JTable) Mouse_evt.getSource();
+                Point point = Mouse_evt.getPoint();
+                int row = table.rowAtPoint(point);
+                if (Mouse_evt.getClickCount() == 1) {
+                    jTxtTarea.setText(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 0).toString());
+                    jCboEstado.setSelectedItem(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 1).toString());
+                }
+            }
+        });
+    }
+    
+    public void transferDataCompleted() {
+        jTableCompletadas.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent Mouse_evt) {
+                JTable table = (JTable) Mouse_evt.getSource();
+                Point point = Mouse_evt.getPoint();
+                int row = table.rowAtPoint(point);
+                if (Mouse_evt.getClickCount() == 1) {
+                    jTxtTarea.setText(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 0).toString());
+                    jCboEstado.setSelectedItem(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 1).toString());
+                }
+            }
+        });
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -384,15 +440,11 @@ public class TareasPendientes extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TareasPendientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TareasPendientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TareasPendientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(TareasPendientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
@@ -418,7 +470,7 @@ public class TareasPendientes extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableCompletadas;
     private javax.swing.JTable jTablePendientes;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTxtBuscar;
     private javax.swing.JTextField jTxtTarea;
     // End of variables declaration//GEN-END:variables
 }
