@@ -1,0 +1,5 @@
+Dormir,domingo 28 de enero de 2024,Completa
+Ir al super,lunes 29 de enero de 2024,Pendiente
+Sacar al perro,lunes 29 de enero de 2024,Pendiente
+Limpiar,martes 30 de enero de 2024,Pendiente
+Ir a la U,miércoles 31 de enero de 2024,Pendiente

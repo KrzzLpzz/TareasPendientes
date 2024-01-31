@@ -4,17 +4,32 @@
  */
 package com.krzz.tareaspendientes;
 
+import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTable;
+
 /**
  *
  * @author crisa
  */
 public class TareasPendientes extends javax.swing.JFrame {
 
+    private final String ruta = System.getProperties().getProperty("user.dir");
+    File archivo = new File(ruta + "//TAREAS.txt");
+
     /**
      * Creates new form TareasPendientes
      */
     public TareasPendientes() {
         initComponents();
+        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
     }
 
     /**
@@ -28,10 +43,9 @@ public class TareasPendientes extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTxtTarea = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jCboEstado = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jTxtTarea = new javax.swing.JTextField();
+        jCboEstado = new javax.swing.JComboBox<>();
         jBtnIngresar = new javax.swing.JButton();
         jBtnActualizar = new javax.swing.JButton();
         jBtnNuevo = new javax.swing.JButton();
@@ -39,10 +53,10 @@ public class TareasPendientes extends javax.swing.JFrame {
         jBtnSalir = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTablePendientes = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        jTableCompletadas = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
 
@@ -52,11 +66,10 @@ public class TareasPendientes extends javax.swing.JFrame {
 
         jLabel1.setText("Ingresa tu tarea:");
 
-        jLabel2.setText("Fecha limite:");
-
-        jCboEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jLabel3.setText("Estado:");
+
+        jCboEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--SELECCIONAR--", "Completa", "Pendiente" }));
+        jCboEstado.setToolTipText("");
 
         jBtnIngresar.setText("Ingresar");
         jBtnIngresar.addActionListener(new java.awt.event.ActionListener() {
@@ -100,16 +113,14 @@ public class TareasPendientes extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(60, 60, 60)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTxtTarea, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jCboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jCboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(48, 48, 48)
                         .addComponent(jBtnIngresar)
@@ -121,7 +132,7 @@ public class TareasPendientes extends javax.swing.JFrame {
                         .addComponent(JBtnEliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jBtnSalir)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,7 +140,6 @@ public class TareasPendientes extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -147,18 +157,18 @@ public class TareasPendientes extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Tareas Pendientes"));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTablePendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Tarea", "Estado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTablePendientes);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -179,18 +189,18 @@ public class TareasPendientes extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Tareas Completadas"));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        jTableCompletadas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Tarea", "Estado"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(jTableCompletadas);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -249,11 +259,13 @@ public class TareasPendientes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIngresarActionPerformed
-        // TODO add your handling code here:
+        writeData(archivo);
+        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
-        // TODO add your handling code here:
+        actualizarDato(archivo, jTxtTarea.getText());
+        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_jBtnActualizarActionPerformed
 
     private void jBtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNuevoActionPerformed
@@ -261,17 +273,124 @@ public class TareasPendientes extends javax.swing.JFrame {
     }//GEN-LAST:event_jBtnNuevoActionPerformed
 
     private void JBtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBtnEliminarActionPerformed
-        // TODO add your handling code here:
+        eliminarLineaPorValorPrimeraColumna(archivo);
+        cargarArchivoEnJTable(archivo, jTablePendientes, jTableCompletadas);
     }//GEN-LAST:event_JBtnEliminarActionPerformed
 
     private void jBtnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnSalirActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_jBtnSalirActionPerformed
+
+    public static void cargarArchivoEnJTable(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
+        DefaultTableModel modelPendientes = (DefaultTableModel) jTablePendientes.getModel();
+        DefaultTableModel modelCompletadas = (DefaultTableModel) jTableCompletadas.getModel();
+
+        // Limpiar el contenido existente de las JTables
+        modelPendientes.setRowCount(0);
+        modelCompletadas.setRowCount(0);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(","); // Ajusta el separador según tu archivo
+                if (data.length >= 2) { // Asegurarse de que la columna del estado existe
+                    String estado = data[1].trim(); // Suponiendo que el estado está en la tercera columna
+                    if ("Pendiente".equals(estado)) {
+                        modelPendientes.addRow(data);
+                    } else if ("Completa".equals(estado)) {
+                        modelCompletadas.addRow(data);
+                    }
+                }
+            }
+        } catch (IOException e) {
+        }
+    }
+
+    private void writeData(File archivo) {
+        try (FileWriter escritura = new FileWriter(archivo, true)) {
+            String tarea = jTxtTarea.getText();
+            String estado = jCboEstado.getSelectedItem().toString();
+
+            escritura.write(tarea + "," + estado + "\n"); // Agrega un salto de línea
+        } catch (IOException e) {
+        }
+    }
+
+    public void actualizarDato(File archivo, String valorPrimeraColumna) {
+    List<String> lineas = new ArrayList<>();
+
+    // Leer el archivo y cargar los datos en la lista
+    try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            lineas.add(linea);
+        }
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        return;
+    }
+
+    // Obtener los nuevos datos desde tus componentes
+    String nuevaLinea = jTxtTarea.getText() + "," + jCboEstado.getSelectedItem().toString(); // Nueva línea completa
+
+    // Buscar y actualizar el dato deseado
+    for (int i = 0; i < lineas.size(); i++) {
+        String[] partes = lineas.get(i).split(","); // Suponiendo que tus datos están separados por comas
+        if (partes.length > 0 && partes[0].equals(valorPrimeraColumna)) {
+            // Actualizar la línea completa
+            lineas.set(i, nuevaLinea);
+            break; // Termina la búsqueda una vez que se actualiza la línea
+        }
+    }
+
+    // Escribir los datos actualizados de vuelta al archivo
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+        for (String linea : lineas) {
+            bw.write(linea);
+            bw.newLine();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+
+    public void eliminarLineaPorValorPrimeraColumna(File archivo) {
+        String valorPrimeraColumna = jTxtTarea.getText(); // Obtener el valor del JTextField
+        List<String> lineas = new ArrayList<>();
+
+        // Leer el archivo y cargar los datos en la lista
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(","); // Suponiendo que tus datos están separados por comas
+                if (!partes[0].equals(valorPrimeraColumna)) {
+                    // Agrega la línea a la lista si el valor de la primera columna no coincide
+                    lineas.add(linea);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // Escribir los datos actualizados de vuelta al archivo
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+            for (String linea : lineas) {
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -311,7 +430,6 @@ public class TareasPendientes extends javax.swing.JFrame {
     private javax.swing.JButton jBtnSalir;
     private javax.swing.JComboBox<String> jCboEstado;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
@@ -319,8 +437,8 @@ public class TareasPendientes extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTableCompletadas;
+    private javax.swing.JTable jTablePendientes;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTxtTarea;
     // End of variables declaration//GEN-END:variables
