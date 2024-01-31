@@ -265,14 +265,26 @@ public final class TareasPendientes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIngresarActionPerformed
-        writeData(archivo);
-        loadFile(archivo, jTablePendientes, jTableCompletadas);
+        if (jCboEstado.getSelectedItem() == "--SELECCIONAR--") {
+            JOptionPane.showMessageDialog(null, "Debes ingresar un estado diferente a seleccionar.", "Error", JOptionPane.OK_OPTION);
+        } else {
+            writeData(archivo);
+            loadFile(archivo, jTablePendientes, jTableCompletadas);
+            clear();
+        }
+        
+        
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
-        if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres editar este item?", "Editar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-            updateData(archivo, jTxtTarea.getText());
-            loadFile(archivo, jTablePendientes, jTableCompletadas);
+        if (jCboEstado.getSelectedItem() == "--SELECCIONAR--") {
+            JOptionPane.showMessageDialog(null, "Debes ingresar un estado diferente a seleccionar.", "Error", JOptionPane.OK_OPTION);
+        } else {
+            if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres editar este item?", "Editar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                updateData(archivo, jTxtTarea.getText());
+                loadFile(archivo, jTablePendientes, jTableCompletadas);
+                clear();
+            }
         }
     }//GEN-LAST:event_jBtnActualizarActionPerformed
 
@@ -280,6 +292,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar este item?", "Eliminar", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
             deleteData(archivo);
             loadFile(archivo, jTablePendientes, jTableCompletadas);
+            clear();
         }
     }//GEN-LAST:event_JBtnEliminarActionPerformed
 

@@ -1,8 +1,6 @@
 HOLA,Completa
 ADIOS,Completa
-bAÑARME,Pendiente
 Salir,Completa
 Comer,Pendiente
-Nose,Pendiente
 jaja,Completa
-jaja2,Pendiente
+jaja2,Completa
