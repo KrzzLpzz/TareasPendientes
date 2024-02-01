@@ -274,8 +274,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
             loadFile(archivo, jTablePendientes, jTableCompletadas);
             clear();
         }
-        
-        
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
@@ -504,9 +502,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
-        
-        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
