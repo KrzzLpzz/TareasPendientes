@@ -5,19 +5,13 @@
 package com.krzz.tareaspendientes;
 
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -26,6 +20,10 @@ import javax.swing.JTable;
 public final class TareasPendientes extends javax.swing.JFrame {
     private final String ruta = System.getProperties().getProperty("user.dir");
     File archivo = new File(ruta + "//TAREAS.txt");
+    public static String mensaje;
+    public String xd;
+    Notificacion notificar = new Notificacion();
+
 
     /**
      * Creates new form TareasPendientes
@@ -35,6 +33,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         loadFile(archivo, jTablePendientes, jTableCompletadas);
         transferDataCompleted();
         transferDataPending();
+        startAutoClicker(3000);
     }
 
     /**
@@ -62,8 +61,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableCompletadas = new javax.swing.JTable();
-        jTxtBuscar = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -225,8 +222,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jLabel4.setText("Buscar:");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,12 +233,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(159, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(158, 158, 158))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,10 +240,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,6 +247,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIngresarActionPerformed
@@ -415,7 +401,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
         jCboEstado.setSelectedIndex(0);
         jBtnActualizar.setEnabled(false);
         jBtnIngresar.setEnabled(true);
-        jTxtBuscar.setText("");
         jTxtTarea.requestFocus();
     }
 
@@ -453,11 +438,59 @@ public final class TareasPendientes extends javax.swing.JFrame {
         });
     }
 
+    public class TableUtils {
+
+    public static void updateRandomValueFromFirstColumn(JTable table, StringBuilder randomValueHolder) {
+        int rowCount = table.getRowCount();
+        if (rowCount > 0) {
+            int randomIndex = new Random().nextInt(rowCount);
+            Object value = table.getValueAt(randomIndex, 0);
+            if (value != null) {
+                randomValueHolder.setLength(0); // Limpiamos el StringBuilder
+                randomValueHolder.append(value.toString());
+            }
+        }
+    }
+}
+    
+    private void startAutoClicker(final int interval) {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    while (true) {
+                        Thread.sleep(interval);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                // Debes tener una variable para contener el valor aleatorio
+                                StringBuilder randomValueHolder = new StringBuilder();
+
+                                // Suponiendo que "miTabla" es tu JTable existente
+                                TableUtils.updateRandomValueFromFirstColumn(jTableCompletadas, randomValueHolder);
+
+                                mensaje = randomValueHolder.toString();
+                                
+                                try {
+                                    notificar.mje();
+                                    } catch (Exception e) {
+                                 }
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-
+        
+        
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -492,7 +525,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jCboEstado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -500,7 +532,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableCompletadas;
     private javax.swing.JTable jTablePendientes;
-    private javax.swing.JTextField jTxtBuscar;
     private javax.swing.JTextField jTxtTarea;
     // End of variables declaration//GEN-END:variables
 }

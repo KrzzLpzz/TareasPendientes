@@ -4,3 +4,4 @@ Salir,Completa
 Comer,Pendiente
 jaja,Completa
 jaja2,Completa
+No se,Pendiente
