@@ -18,22 +18,27 @@ import javax.swing.SwingUtilities;
  * @author crisa
  */
 public final class TareasPendientes extends javax.swing.JFrame {
+    // Variables para almacenar la ruta de nuestro archivo de texto
     private final String ruta = System.getProperties().getProperty("user.dir");
     File archivo = new File(ruta + "//TAREAS.txt");
+    
+    // Variables para el mensaje de notificacion
     public static String mensaje;
     public String xd;
     Notificacion notificar = new Notificacion();
-
 
     /**
      * Creates new form TareasPendientes
      */
     public TareasPendientes() {
         initComponents();        
-        loadFile(archivo, jTablePendientes, jTableCompletadas);
+        loadFile(archivo, jTablePendientes, jTableCompletadas); // Cargamos las tablas con el archivo de texto
+        // Cargamos las funciones para poder seleccionar las filas del jtable
         transferDataCompleted();
         transferDataPending();
-        startAutoClicker(3000);
+        
+        // iniciamos la funcion para la notificacion, se manda cada 30s
+        startNotifications(30000); // 30000ms = 30s
     }
 
     /**
@@ -266,21 +271,28 @@ public final class TareasPendientes extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    // Boton de Ingresar
     private void jBtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIngresarActionPerformed
+        // Comparamos si el valor del cbo de estado es seleccionar, si lo es, nos avisa
         if (jCboEstado.getSelectedItem() == "--SELECCIONAR--") {
             JOptionPane.showMessageDialog(null, "Debes ingresar un estado diferente a seleccionar.", "Error", JOptionPane.OK_OPTION);
         } else {
+            //si no, guarda el archivo, carga de nuevo las tablas y limpia
             writeData(archivo);
             loadFile(archivo, jTablePendientes, jTableCompletadas);
             clear();
         }
     }//GEN-LAST:event_jBtnIngresarActionPerformed
 
+    // Boton de Actualizar
     private void jBtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarActionPerformed
+        // Comparamos si el valor del cbo de estado es seleccionar, si lo es, nos avisa
         if (jCboEstado.getSelectedItem() == "--SELECCIONAR--") {
             JOptionPane.showMessageDialog(null, "Debes ingresar un estado diferente a seleccionar.", "Error", JOptionPane.OK_OPTION);
         } else {
+            // si no, nos pregunta si queremos actualizar los datos
             if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres editar este item?", "Editar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                // actualizamos los datos, cargamos las tablas y limpiamos
                 updateData(archivo, jTxtTarea.getText());
                 loadFile(archivo, jTablePendientes, jTableCompletadas);
                 clear();
@@ -288,25 +300,33 @@ public final class TareasPendientes extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jBtnActualizarActionPerformed
 
+    // Boton de Eliminar
     private void JBtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBtnEliminarActionPerformed
+        // Nos pregunta si queremos eliminar los datos
         if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar este item?", "Eliminar", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
+            // en caso de ser si, elimina el dato que seleccionamos, cargamos las tablas y limpiamos
             deleteData(archivo);
             loadFile(archivo, jTablePendientes, jTableCompletadas);
             clear();
         }
     }//GEN-LAST:event_JBtnEliminarActionPerformed
 
+    // Boton nuevo
     private void jBtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNuevoActionPerformed
-        clear();
+        clear(); // Limpia los campos
     }//GEN-LAST:event_jBtnNuevoActionPerformed
 
+    // Boton de Salir
     private void jBtnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnSalirActionPerformed
+        // Nos pregunta si queremos cerrar el programa
         if (JOptionPane.showConfirmDialog(null, "¿Seguro que quieres salir?", "Salir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
     }//GEN-LAST:event_jBtnSalirActionPerformed
 
+    // Funcion para cargar el archivo de texto a las tablas.
     public static void loadFile(File archivo, JTable jTablePendientes, JTable jTableCompletadas) {
+        // Obtenemos el modelo de las tablas Pendientes y Completadas
         DefaultTableModel modelPendientes = (DefaultTableModel) jTablePendientes.getModel();
         DefaultTableModel modelCompletadas = (DefaultTableModel) jTableCompletadas.getModel();
 
@@ -314,33 +334,41 @@ public final class TareasPendientes extends javax.swing.JFrame {
         modelPendientes.setRowCount(0);
         modelCompletadas.setRowCount(0);
 
+        // try catch para poder leer el archivo
         try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String line;
+            String line; // variable para almacenar las lineas del archivo
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(","); // Ajusta el separador según tu archivo
-                if (data.length >= 2) { // Asegurarse de que la columna del estado existe
+                String[] data = line.split(","); // usamos la , como separador para saber a que columna debe ir cada dato
+                if (data.length >= 2) { // Nos aseguramos que la columna estado existe
                     String estado = data[1].trim(); // Suponiendo que el estado está en la tercera columna
-                    if ("Pendiente".equals(estado)) {
+                    if ("Pendiente".equals(estado)) { // Si el estdo es pendiente, agregamos los datos a la tabla pendientes
                         modelPendientes.addRow(data);
-                    } else if ("Completa".equals(estado)) {
+                    } else if ("Completa".equals(estado)) { // Si el estdo es completa, agregamos los datos a la tabla completas
                         modelCompletadas.addRow(data);
                     }
                 }
             }
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error leyendo el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Funcion para poder guardar los datos en el archivo txt
     private void writeData(File archivo) {
+        // intentamos guardar los datos en el archivo
         try (FileWriter escritura = new FileWriter(archivo, true)) {
+            // Obtenemos los valores de los textfields
             String tarea = jTxtTarea.getText();
             String estado = jCboEstado.getSelectedItem().toString();
-
-            escritura.write(tarea + "," + estado + "\n"); // Agrega un salto de línea
+            
+            // concatenamos y guardamos
+            escritura.write(tarea + "," + estado + "\n"); // Agrega un salto de línea para agregar mas datos
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error leyendo el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Funcion para actualizar los datos
     public void updateData(File archivo, String valorPrimeraColumna) {
         List<String> lineas = new ArrayList<>();
 
@@ -350,7 +378,6 @@ public final class TareasPendientes extends javax.swing.JFrame {
             while ((linea = br.readLine()) != null) {
                 lineas.add(linea);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -380,6 +407,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         }
     }
 
+    // Funcion para poder eliminar un dato
     public void deleteData(File archivo) {
         String valorPrimeraColumna = jTxtTarea.getText(); // Obtener el valor del JTextField
         List<String> lineas = new ArrayList<>();
@@ -410,6 +438,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         }
     }
 
+    // Funcion para poder limpiar los campos y reiniciar estados
     public void clear() {
         jTxtTarea.setText("");
         jCboEstado.setSelectedIndex(0);
@@ -418,17 +447,19 @@ public final class TareasPendientes extends javax.swing.JFrame {
         jTxtTarea.requestFocus();
     }
 
+    // Funcion para poder seleccionar los datos de la tabal pendientes
     public void transferDataPending() {
         jTablePendientes.addMouseListener(new MouseAdapter() {
             @Override
+            // Obtenemos el evento del mouse
             public void mousePressed(MouseEvent Mouse_evt) {
-                JTable table = (JTable) Mouse_evt.getSource();
-                Point point = Mouse_evt.getPoint();
-                int row = table.rowAtPoint(point);
                 if (Mouse_evt.getClickCount() == 1) {
-                    jTxtTarea.setText(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 0).toString());
-                    jCboEstado.setSelectedItem(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 1).toString());
-                    jBtnIngresar.setEnabled(false);
+                    // Obtener datos de la fila seleccionada
+                    jTxtTarea.setText(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 0).toString()); // Obtiene el valor de la columna tarea
+                    jCboEstado.setSelectedItem(jTablePendientes.getValueAt(jTablePendientes.getSelectedRow(), 1).toString()); // Obtiene el valor de la columna estado
+                    
+                    // Cambiamos el estado de los botones
+                    jBtnIngresar.setEnabled(false); 
                     jBtnActualizar.setEnabled(true);
                 }
             }
@@ -438,13 +469,14 @@ public final class TareasPendientes extends javax.swing.JFrame {
     public void transferDataCompleted() {
         jTableCompletadas.addMouseListener(new MouseAdapter() {
             @Override
+            // Obtenemos el evento del mouse
             public void mousePressed(MouseEvent Mouse_evt) {
-                JTable table = (JTable) Mouse_evt.getSource();
-                Point point = Mouse_evt.getPoint();
-                int row = table.rowAtPoint(point);
                 if (Mouse_evt.getClickCount() == 1) {
-                    jTxtTarea.setText(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 0).toString());
-                    jCboEstado.setSelectedItem(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 1).toString());
+                    // Obtener datos de la fila seleccionada
+                    jTxtTarea.setText(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 0).toString()); // Obtiene el valor de la columna tarea
+                    jCboEstado.setSelectedItem(jTableCompletadas.getValueAt(jTableCompletadas.getSelectedRow(), 1).toString()); // Obtiene el valor de la columna estado
+                    
+                    // Cambiamos el estado de los botones
                     jBtnIngresar.setEnabled(false);
                     jBtnActualizar.setEnabled(true);
                 }
@@ -452,6 +484,7 @@ public final class TareasPendientes extends javax.swing.JFrame {
         });
     }
 
+    // Clase para poder obtener un calor random de la tarea de la tabla pendientes
     public class TableUtils {
 
     public static void updateRandomValueFromFirstColumn(JTable table, StringBuilder randomValueHolder) {
@@ -467,7 +500,8 @@ public final class TareasPendientes extends javax.swing.JFrame {
     }
 }
     
-    private void startAutoClicker(final int interval) {
+    // Funcion que nos permite tener notificaciones del sistema
+    private void startNotifications(final int interval) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 try {
@@ -475,14 +509,16 @@ public final class TareasPendientes extends javax.swing.JFrame {
                         Thread.sleep(interval);
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                // Debes tener una variable para contener el valor aleatorio
+                                //  variable para contener el valor aleatorio
                                 StringBuilder randomValueHolder = new StringBuilder();
 
-                                // Suponiendo que "miTabla" es tu JTable existente
+                                // Llamamos la clase para generar el valor del mensaje
                                 TableUtils.updateRandomValueFromFirstColumn(jTableCompletadas, randomValueHolder);
-
+                                
+                                // cargamos el mensaje
                                 mensaje = randomValueHolder.toString();
                                 
+                                // mandamos el mensaje
                                 try {
                                     notificar.mje();
                                     } catch (Exception e) {
